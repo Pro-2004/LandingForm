@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Level Up Page</title>
+  <link rel="stylesheet" href="Home.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">Level</div>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="landing.html">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact us</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <h2 class="section-title blue">Past in person <span>classes</span></h2>
+    <div class="button-group pink">
+      <button>Robotics</button>
+      <button>Jungle</button>
+      <button>Figma</button>
+    </div>
+
+    <h2 class="section-title pink">Past Online <span>classes</span></h2>
+    <div class="button-group blue">
+      <button>Programing</button>
+      <button>Algorithm</button>
+      <button>Python</button>
+    </div>
+
+    <p class="message">
+      Hello Awesome people Please register below <br />
+      in case you want to level up your skills
+    </p>
+
+    <a href="#" class="register-btn" id="registerBtn">Register</a>
+  
+    <div id="savedInfo" class="saved-info"></div>
+  </main>
+
+  <!-- Popup Form -->
+  <div class="popup" id="popupForm">
+    <div class="popup-content">
+      <h3>Register Form</h3>
+      <form id="registerForm">
+        <input type="file" id="pimage" name="image" accept="image/*" />
+        <input type="text" id="name" name="name" placeholder="Name" required />
+        <input type="text" id="regNumber" name="regNumber" placeholder="Registration Number" required />
+        <input type="text" id="courseName" name="courseName" placeholder="Course Name" required />
+        <textarea id="description" name="description" placeholder="Description" required></textarea>
+        <input type="password" id="password" name="password" placeholder="Password" required />
+        <!-- Department Dropdown -->
+        <select id="department" name="department" required>
+          <option value="">Select Department</option>
+          <option value="Computer Science">Computer Science</option>
+          <option value="Electrical Engineering">Accountant</option>
+          <option value="Mechanical Engineering">Law</option>
+          <option value="Civil Engineering">Marketing</option>
+          <option value="Business Administration">Business Administration</option>
+        </select>
+        <button type="submit" id="saveBtn">Save</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>🔄 Level up</p>
+  </footer>
+
+  <script>
+    // Get elements
+    const registerBtn = document.getElementById('registerBtn');
+    const popupForm = document.getElementById('popupForm');
+    const registerForm = document.getElementById('registerForm');
+    const savedInfo = document.getElementById('savedInfo');
+
+    // Show popup form when Register button is clicked
+    registerBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      popupForm.style.display = 'flex';
+    });
+
+    // Handle form submission
+    registerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(registerForm);
+      const name = formData.get('name');
+      const regNumber = formData.get('regNumber');
+      const courseName = formData.get('courseName');
+      const description = formData.get('description');
+      const password = formData.get('password');
+      const department = formData.get('department');
+      const imageFile = document.getElementById('pimage').files[0];
+
+      // Convert the image to base64
+      let imageBase64 = '';
+      if (imageFile) {
+        const reader = new FileReader();
+        reader.onloadend = function() {
+          imageBase64 = reader.result; // Get the base64 encoded image
+
+          // Save the data to localStorage once image is loaded
+          saveDataToLocalStorage(imageBase64);
+        };
+        reader.readAsDataURL(imageFile);
+      } else {
+        saveDataToLocalStorage(null); // No image selected
+      }
+
+      // Function to save data to localStorage
+      function saveDataToLocalStorage(imageBase64) {
+        // Password validation
+        if (password.length < 6 || !/\d/.test(password)) {
+          alert('Password must be at least 6 characters long and contain at least one number.');
+          return;
+        }
+
+        // Save the data to localStorage
+        const userData = {
+          image: imageBase64,
+          name,
+          regNumber,
+          courseName,
+          description,
+          password,
+          department,
+        };
+        localStorage.setItem('userData', JSON.stringify(userData));
+
+        // Display the saved data on the page
+        displaySavedData();
+
+        // Hide the popup form after saving
+        popupForm.style.display = 'none';
+
+        // Optionally, clear the form
+        registerForm.reset();
+      }
+    });
+
+    // Function to display saved data
+    function displaySavedData() {
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      if (userData) {
+        savedInfo.innerHTML = `
+          <p><strong>Image:</strong><br /><img src="${userData.image}" alt="Uploaded Image" width="100px" /></p>
+          <p><strong>Name:</strong> ${userData.name}</p>
+          <p><strong>Registration Number:</strong> ${userData.regNumber}</p>
+          <p><strong>Course Name:</strong> ${userData.courseName}</p>
+          <p><strong>Description:</strong> ${userData.description}</p>
+          <p><strong>Password:</strong> ${userData.password}</p>
+          <p><strong>Department:</strong> ${userData.department}</p>
+        `;
+      } else {
+        savedInfo.innerHTML = '<p>No data saved yet.</p>';
+      }
+    }
+
+    // Display saved data when the page loads
+    displaySavedData();
+
+    // Close the popup if the user clicks outside of it
+    window.addEventListener('click', (e) => {
+      if (e.target === popupForm) {
+        popupForm.style.display = 'none';
+      }
+    });
+  </script>
+
+</body>
+</html>
